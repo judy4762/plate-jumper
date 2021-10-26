@@ -2,6 +2,7 @@ package js.jumpnrun;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -14,6 +15,11 @@ import javafx.stage.Stage;
 
 public class MainGame extends Application {
 
+    private int jumps = 0;
+    private int lastJumpScore = 0;
+
+    private int score = 0;
+    private Avatar avatar;
     private Background background;
     private PlateList plates;
     private CloudList clouds;
@@ -45,6 +51,10 @@ public class MainGame extends Application {
      * @param stage handed over to put the scene on
      */
     public void run(Stage stage) {
+        jumps = 0;
+        lastJumpScore = 0;
+        score = 0;
+
         // Create Scene that shows the background
         background = new Background();
         Scene gameScene = new Scene(background, Const.DISPLAY_WIDTH, Const.DISPLAY_HEIGHT);
@@ -61,14 +71,26 @@ public class MainGame extends Application {
         plates = new PlateList();
         background.getChildren().addAll(plates);
 
+        // Add avatar
+        avatar = new Avatar();
+        background.getChildren().add(avatar);
+
+        // Put water to the foreground
+        background.getChildren().get(0).toFront();
+
         // Game animation
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long l) {
-                //TODO if (!avatar.isLiving()) showGameOverScene(stage);
+                if (!avatar.isLiving()) {
+                    this.stop();
+                    showGameOverScene(stage);
+                }
                 clouds.move();
                 plates.move();
                 background.moveWater();
+                if (!avatarStanding()) avatar.fall();
+                score++;
             }
         };
         timer.start();
@@ -80,7 +102,21 @@ public class MainGame extends Application {
                     timer.stop();
                     showGameOverScene(stage);
                 }
-                case SPACE -> System.out.println("avatar.jump()"); // TODO
+                case SPACE -> {
+                    //System.out.println("jumps: " + jumps);
+                    if (Math.abs(score - lastJumpScore) < 20){
+                        lastJumpScore = score;
+                        break;
+                    }
+
+                    if (Math.abs(score - lastJumpScore) < 60) jumps++;
+                    else jumps = 0;
+
+                    if (jumps < Const.MAX_AMOUNT_OF_JUMPS) avatar.jump();
+                    else jumps = 0;
+
+                    lastJumpScore = score;
+                }
                 default -> {
                 }
             }
@@ -106,17 +142,21 @@ public class MainGame extends Application {
 
         Button startButton = new Button("START");
         Button aboutButton = new Button("ABOUT");
+        Button quitButton = new Button("QUIT");
         aboutButton.setMinSize(250, 30);
         startButton.setMinSize(250, 30);
+        quitButton.setMinSize(250, 30);
 
-        vbox.getChildren().addAll(startButton);
+        vbox.getChildren().add(startButton);
         vbox.getChildren().add(aboutButton);
+        vbox.getChildren().add(quitButton);
 
         background.getChildren().addAll(vbox);
 
         // Add Action Handler for buttons
         startButton.setOnAction(ev -> showCounterScene(stage));
         aboutButton.setOnAction(ev -> showAboutScene(stage));
+        quitButton.setOnAction(ev -> Platform.exit());
 
         // Show menu scene on the stage
         Scene startScene = new Scene(background, Const.DISPLAY_WIDTH, Const.DISPLAY_HEIGHT);
@@ -188,7 +228,7 @@ public class MainGame extends Application {
         vbox.setPadding(new Insets(30, 30, 30, 30));
 
         // Create content elements for the scene
-        Label[] labels = {new Label("Judys Jump n Run Game"), new Label("Computer Graphics"), new Label("2021")};
+        Label[] labels = {new Label("Plate Jumper"), new Label("Computer Graphics"), new Label("2021")};
 
         for (Label label : labels) {
             label.setStyle("-fx-font-size: 15;");
@@ -227,8 +267,7 @@ public class MainGame extends Application {
         vbox.setPadding(new Insets(30, 30, 30, 30));
 
         // Create content elements for the scene
-        // TODO view points
-        Label[] labels = {new Label("Game Over"), new Label("You achieved xxx points")};
+        Label[] labels = {new Label("Game Over"), new Label("You achieved " + score / 10 + " points")};
 
         for (Label label : labels) {
             label.setStyle("-fx-font-size: 15;");
@@ -252,6 +291,18 @@ public class MainGame extends Application {
         stage.setScene(counterScene);
         stage.show();
         System.out.println(">>> Game Over");
+    }
+
+    public boolean avatarStanding() {
+        for (int i = 0; i < plates.size(); i++) {
+            if (Math.abs(avatar.getFeetYPosition() - plates.get(i).getY()) < 5) {
+                if (Math.abs(avatar.getFeetXPosition() - (plates.get(i).getX() + (plates.get(i).getWidth() / 2))) <
+                        plates.get(i).getWidth() / 2) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

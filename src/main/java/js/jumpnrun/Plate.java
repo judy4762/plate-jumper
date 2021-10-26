@@ -28,7 +28,7 @@ public class Plate extends Rectangle {
      */
     public Plate(double x) {
         super(x,
-                (new Random().nextInt(Const.SKY_HEIGHT - 80) + 40),
+                (new Random().nextInt(Const.SKY_HEIGHT - 180) + 100),
                 (new Random().nextInt((Const.MAX_PLATE_WIDTH - Const.MIN_PLATE_WIDTH) + 1) + Const.MIN_PLATE_WIDTH),
                 Const.PLATE_HEIGHT);
 
@@ -50,7 +50,7 @@ public class Plate extends Rectangle {
      */
     public void setNewProperties(double x) {
         this.setX(x);
-        this.setY(new Random().nextInt(Const.SKY_HEIGHT - 80) + 40);
+        this.setY(new Random().nextInt(Const.SKY_HEIGHT - 180) + 100);
         this.setWidth(new Random().nextInt((Const.MAX_PLATE_WIDTH - Const.MIN_PLATE_WIDTH) + 1) + Const.MIN_PLATE_WIDTH);
     }
 

@@ -10,7 +10,7 @@ final class Const {
     static final int PLATE_HEIGHT = 15;
     static final int MAX_PLATE_WIDTH = 100;
     static final int MIN_PLATE_WIDTH = 50;
-    static final int SPACE_BETWEEN_PLATES = 120;
+    static final int SPACE_BETWEEN_PLATES = 150;
     static final int AMOUNT_PLATES_IN_SCENE = DISPLAY_WIDTH * 2 / SPACE_BETWEEN_PLATES;
 
     // BACKGROUND
@@ -27,8 +27,10 @@ final class Const {
 
 
     // AVATAR
-    static final int MAX_AMOUNT_OF_JUMPS = 5;
+    static final int MAX_AMOUNT_OF_JUMPS = 3;
     static final int AVATAR_X = DISPLAY_WIDTH / 4;
-    static final int AVATAR_SIZE = 30;
+    static final int AVATAR_SIZE = 50;
+    static final double JUMP_SPEED = 6;
+    static final double FALLING_SPEED = 3;
 
 }

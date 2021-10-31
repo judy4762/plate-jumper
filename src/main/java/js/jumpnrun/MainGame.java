@@ -15,20 +15,21 @@ import javafx.stage.Stage;
 
 public class MainGame extends Application {
 
-    private int jumps = 0;
-    private int lastJumpScore = 0;
-
     private int score = 0;
+
     private Avatar avatar;
     private Background background;
     private PlateList plates;
     private CloudList clouds;
+
     private int counterVal = 200;
+
+    private double gameSpeed = 1;
 
 
     @Override
     public void start(Stage stage) {
-        stage.setTitle("Jump N Run");
+        stage.setTitle("Plate Jumper");
         stage.setResizable(false);
 
         // Show start menu scene
@@ -51,8 +52,7 @@ public class MainGame extends Application {
      * @param stage handed over to put the scene on
      */
     public void run(Stage stage) {
-        jumps = 0;
-        lastJumpScore = 0;
+        // Reset score to 0
         score = 0;
 
         // Create Scene that shows the background
@@ -73,6 +73,7 @@ public class MainGame extends Application {
 
         // Add avatar
         avatar = new Avatar();
+        avatar.jumps = 0;
         background.getChildren().add(avatar);
 
         // Put water to the foreground
@@ -86,11 +87,36 @@ public class MainGame extends Application {
                     this.stop();
                     showGameOverScene(stage);
                 }
+
+                // Avatar jumping behaviour
+                if (avatar.jumpTime > 0 && avatar.jumping) {
+                    avatar.setJumpImage();
+                    avatar.jump();
+                    avatar.jumpSpeed -= 0.1;
+                    avatar.jumpTime--;
+                } else {
+                    avatar.setStandingImage();
+                    avatar.jumping = false;
+                    if (avatar.minFallingTime < 0 || avatarStanding()) {
+                        avatar.jumpTime = Const.STANDARD_JUMP_TIME;
+                        avatar.jumps = 0;
+                        avatar.minFallingTime = Const.STANDARD_MIN_FALLING_TIME;
+                    }
+                    avatar.minFallingTime--;
+                }
+
+                // Move all game objects
                 clouds.move();
-                plates.move();
+                plates.move(gameSpeed);
                 background.moveWater();
+
                 if (!avatarStanding()) avatar.fall();
+
+                // Increase the score
                 score++;
+
+                // Increase game speed
+                gameSpeed += 0.0001;
             }
         };
         timer.start();
@@ -103,19 +129,13 @@ public class MainGame extends Application {
                     showGameOverScene(stage);
                 }
                 case SPACE -> {
-                    //System.out.println("jumps: " + jumps);
-                    if (Math.abs(score - lastJumpScore) < 20){
-                        lastJumpScore = score;
-                        break;
+                    // Let Avatar jump
+                    avatar.jumping = true;
+                    avatar.jumpSpeed = Const.JUMP_SPEED;
+                    avatar.jumps++;
+                    if (avatar.jumps <= Const.MAX_AMOUNT_OF_JUMPS) {
+                        avatar.jumpTime += Const.STANDARD_JUMP_TIME;
                     }
-
-                    if (Math.abs(score - lastJumpScore) < 60) jumps++;
-                    else jumps = 0;
-
-                    if (jumps < Const.MAX_AMOUNT_OF_JUMPS) avatar.jump();
-                    else jumps = 0;
-
-                    lastJumpScore = score;
                 }
                 default -> {
                 }
@@ -293,11 +313,16 @@ public class MainGame extends Application {
         System.out.println(">>> Game Over");
     }
 
+    /**
+     * Checks if the avatar is standing on a plate or falling.
+     *
+     * @return if standing -> true, if not -> false
+     */
     public boolean avatarStanding() {
         for (int i = 0; i < plates.size(); i++) {
             if (Math.abs(avatar.getFeetYPosition() - plates.get(i).getY()) < 5) {
                 if (Math.abs(avatar.getFeetXPosition() - (plates.get(i).getX() + (plates.get(i).getWidth() / 2))) <
-                        plates.get(i).getWidth() / 2) {
+                        plates.get(i).getWidth() / 2 + 5) {
                     return true;
                 }
             }

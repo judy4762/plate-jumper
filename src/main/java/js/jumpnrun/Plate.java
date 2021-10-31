@@ -36,10 +36,10 @@ public class Plate extends Rectangle {
     }
 
     /**
-     * Moves the Plate one step (SPEED) to the left.
+     * Moves the Plate one step (speed) to the left.
      */
-    public void moveLeft() {
-        this.setX(this.getX() - Const.SPEED);
+    public void moveLeft(double speed) {
+        this.setX(this.getX() - speed);
     }
 
     /**

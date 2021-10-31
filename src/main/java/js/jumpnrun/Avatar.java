@@ -1,17 +1,27 @@
 package js.jumpnrun;
 
-import javafx.animation.AnimationTimer;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.Random;
 
 public class Avatar extends ImageView {
 
-    // Time the avatar jumps.
-    private int counterVal = 20;
+    //Speed of jumping
+    public double jumpSpeed = Const.JUMP_SPEED;
+
+    //Is avatar jumping at the moment?
+    public boolean jumping = false;
+
+    //Recent amount of jumps
+    public int jumps = 0;
+
+    //Time the avatar jumps
+    public double jumpTime = 0;
+
+    //Min falling time after exceeding the max number of direct following jumps
+    public double minFallingTime = Const.STANDARD_MIN_FALLING_TIME;
 
     // Reference to itself (the Avatar-ImageView);
     private ImageView thisImageView = this;
@@ -37,39 +47,17 @@ public class Avatar extends ImageView {
      * @return if living -> true, if dead -> false
      */
     public boolean isLiving() {
-        return (this.getY() + (Const.AVATAR_SIZE / 2) <= Const.WATER_Y + 10) &&
+        return (this.getY() + ((float) Const.AVATAR_SIZE / 2) <= Const.WATER_Y + 10) &&
                 (this.getY() + Const.AVATAR_SIZE + 20 >= 0);
     }
 
     /**
-     * Moves the avatar image like it would jump.
+     * Decreases the Y-Coordinate of the avatar if it is not already out of sight on the top of the scene.
      */
     public void jump() {
-        counterVal = 20;
-        // Animate the counter
-        AnimationTimer timer = new AnimationTimer() {
-            @Override
-            public void handle(long l) {
-                if (counterVal < 0) {
-                    this.stop();
-                    try {
-                        thisImageView.setImage(new Image(new FileInputStream(getImagePath())));
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    counterVal = 20;
-                } else if (counterVal < 20 && getY() > 0) {
-                    setY(getY() - Const.JUMP_SPEED);
-                    try {
-                        thisImageView.setImage(new Image(new FileInputStream(getJumpImagePath())));
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }
-                decCounter();
-            }
-        };
-        timer.start();
+        if (getY() > -(Const.AVATAR_SIZE + 5)) {
+            setY(getY() - jumpSpeed);
+        }
     }
 
     /**
@@ -100,7 +88,7 @@ public class Avatar extends ImageView {
      * @return the path as String
      */
     public String getImagePath() {
-        return ".\\src\\main\\images\\Avatar2.png";
+        return ".\\src\\main\\images\\avatar_stand.png";
     }
 
     /**
@@ -109,14 +97,29 @@ public class Avatar extends ImageView {
      * @return the path as String
      */
     public String getJumpImagePath() {
-        return ".\\src\\main\\images\\Avatar2.png";
+        return ".\\src\\main\\images\\avatar_jump.png";
     }
 
     /**
-     * Declines the counter for the counter scene.
+     * Sets the jumping avatar image.
      */
-    public void decCounter() {
-        counterVal--;
+    public void setJumpImage() {
+        try {
+            thisImageView.setImage(new Image(new FileInputStream(getJumpImagePath())));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Sets the standing avatar image.
+     */
+    public void setStandingImage() {
+        try {
+            thisImageView.setImage(new Image(new FileInputStream(getImagePath())));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
 }

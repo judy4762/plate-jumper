@@ -18,10 +18,10 @@ public class PlateList extends LinkedList<Plate> {
     /**
      * Moves all Plates.
      */
-    public void move() {
+    public void move(double speed) {
         for (int i = 0; i < this.size(); i++) {
             // Move plates
-            this.get(i).moveLeft();
+            this.get(i).moveLeft(speed);
 
             // Is plate out of scene?
             if (this.get(i).passedBy()) {

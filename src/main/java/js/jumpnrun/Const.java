@@ -4,7 +4,6 @@ final class Const {
     // DISPLAY
     static final int DISPLAY_WIDTH = 600;
     static final int DISPLAY_HEIGHT = 400;
-    static final int SPEED = 1;
 
     // PLATES
     static final int PLATE_HEIGHT = 15;
@@ -29,8 +28,10 @@ final class Const {
     // AVATAR
     static final int MAX_AMOUNT_OF_JUMPS = 3;
     static final int AVATAR_X = DISPLAY_WIDTH / 4;
-    static final int AVATAR_SIZE = 50;
+    static final int AVATAR_SIZE = 70;
     static final double JUMP_SPEED = 6;
     static final double FALLING_SPEED = 3;
+    static final double STANDARD_JUMP_TIME = 25;
+    static final double STANDARD_MIN_FALLING_TIME = 60;
 
 }

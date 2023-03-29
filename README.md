@@ -12,3 +12,5 @@ The goal of the game is to keep alive as long as possible. If the avatar falls i
 * SPACE = jump
 * ESCAPE = end game
 
+
+![game play insight](https://github.com/judy4762/plate-jumper/blob/main/gameplay.png)

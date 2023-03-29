@@ -14,3 +14,5 @@ The goal of the game is to keep alive as long as possible. If the avatar falls i
 
 
 ![game play insight](https://github.com/judy4762/plate-jumper/blob/main/gameplay.png)
+
+![game play insight](https://github.com/judy4762/plate-jumper/blob/main/gameplay2.png)
